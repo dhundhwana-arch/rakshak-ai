@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#04070d" />
+  <title>JARVIS-OMEGA // Personal AI Core</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <!-- ================= Ambient background layers ================= -->
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-glow bg-glow--cyan" aria-hidden="true"></div>
+  <div class="bg-glow bg-glow--blue" aria-hidden="true"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <div class="app" id="app">
+    <!-- ======================= Top bar ======================= -->
+    <header class="topbar glass">
+      <div class="topbar__brand">
+        <div class="reactor" aria-hidden="true">
+          <span class="reactor__ring reactor__ring--1"></span>
+          <span class="reactor__ring reactor__ring--2"></span>
+          <span class="reactor__core"></span>
+        </div>
+        <div class="brand-text">
+          <h1>JARVIS<span class="brand-accent">·OMEGA</span></h1>
+          <p class="brand-sub">Multi-Agent Personal AI Core</p>
+        </div>
+      </div>
+
+      <div class="topbar__center">
+        <div class="clock" id="clock">--:--:--</div>
+        <div class="clock-date" id="clockDate">—</div>
+      </div>
+
+      <div class="topbar__status">
+        <div class="pill" id="llmPill" title="LLM backend status">
+          <span class="dot dot--idle" id="llmDot"></span>
+          <span id="llmLabel">LINKING…</span>
+        </div>
+        <div class="pill" id="wsPill" title="WebSocket link">
+          <span class="dot dot--idle" id="wsDot"></span>
+          <span id="wsLabel">OFFLINE</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ======================= Main grid ======================= -->
+    <main class="grid">
+
+      <!-- ------------------- LEFT: system telemetry ------------------- -->
+      <aside class="panel panel--left glass">
+        <section class="block">
+          <h2 class="block__title"><span class="tick"></span>System Status</h2>
+          <div class="stat-list">
+            <div class="stat">
+              <span class="stat__label">Core</span>
+              <span class="stat__value" id="statCore">ONLINE</span>
+            </div>
+            <div class="stat">
+              <span class="stat__label">Uptime</span>
+              <span class="stat__value mono" id="statUptime">00:00:00</span>
+            </div>
+            <div class="stat">
+              <span class="stat__label">Messages</span>
+              <span class="stat__value mono" id="statMsgs">0</span>
+            </div>
+            <div class="stat">
+              <span class="stat__label">Latency</span>
+              <span class="stat__value mono" id="statLatency">— ms</span>
+            </div>
+          </div>
+          <div class="meter-row">
+            <span class="meter-label">Cognitive Load</span>
+            <div class="meter"><i id="loadBar" style="width:8%"></i></div>
+          </div>
+        </section>
+
+        <section class="block">
+          <h2 class="block__title"><span class="tick"></span>Active Agents</h2>
+          <ul class="agents" id="agentList">
+            <li class="agent" data-agent="Router">
+              <span class="agent__status"></span>
+              <span class="agent__name">Router</span>
+              <span class="agent__role">intent</span>
+            </li>
+            <li class="agent" data-agent="Coder">
+              <span class="agent__status"></span>
+              <span class="agent__name">Coder</span>
+              <span class="agent__role">code</span>
+            </li>
+            <li class="agent" data-agent="Research">
+              <span class="agent__status"></span>
+              <span class="agent__name">Research</span>
+              <span class="agent__role">web</span>
+            </li>
+            <li class="agent" data-agent="System">
+              <span class="agent__status"></span>
+              <span class="agent__name">System</span>
+              <span class="agent__role">local</span>
+            </li>
+            <li class="agent" data-agent="Memory">
+              <span class="agent__status"></span>
+              <span class="agent__name">Memory</span>
+              <span class="agent__role">recall</span>
+            </li>
+          </ul>
+        </section>
+
+        <section class="block">
+          <h2 class="block__title"><span class="tick"></span>Memory Core</h2>
+          <div class="stat-list">
+            <div class="stat">
+              <span class="stat__label">Records</span>
+              <span class="stat__value mono" id="memCount">0</span>
+            </div>
+            <div class="stat">
+              <span class="stat__label">Session</span>
+              <span class="stat__value mono" id="memSession">—</span>
+            </div>
+          </div>
+          <div class="meter-row">
+            <span class="meter-label">Index Density</span>
+            <div class="meter"><i id="memBar" style="width:4%"></i></div>
+          </div>
+        </section>
+
+        <section class="block block--actions">
+          <h2 class="block__title"><span class="tick"></span>Core Actions</h2>
+          <button class="btn btn--ghost" id="btnClear">PURGE FEED</button>
+          <button class="btn btn--ghost" id="btnExport">EXPORT LOG</button>
+        </section>
+      </aside>
+
+      <!-- ------------------- CENTER: chat feed ------------------- -->
+      <section class="panel panel--center glass">
+        <div class="feed-head">
+          <h2 class="block__title"><span class="tick"></span>Neural Link</h2>
+          <div class="feed-head__meta mono" id="feedMeta">session: —</div>
+        </div>
+
+        <div class="feed" id="feed">
+          <article class="msg msg--system">
+            <div class="msg__avatar">Ω</div>
+            <div class="msg__body">
+              <div class="msg__meta">
+                <span class="msg__author">JARVIS-OMEGA</span>
+                <span class="msg__time">boot</span>
+              </div>
+              <div class="msg__content">
+                <p>Core initialised. All subsystems nominal.</p>
+                <p class="dim">Awaiting your command. Try a quick action below, or just type.</p>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <!-- ---------------- composer ---------------- -->
+        <div class="composer">
+          <div class="chips">
+            <button class="chip" data-cmd="system status">System status</button>
+            <button class="chip" data-cmd="list files in .">List files</button>
+            <button class="chip" data-cmd="search for latest FastAPI best practices">Web research</button>
+            <button class="chip" data-cmd="write a python script that prints fibonacci numbers to fib.py">Write code</button>
+            <button class="chip" data-cmd="remember my project is JARVIS-OMEGA as project">Save memory</button>
+          </div>
+
+          <form class="input-row" id="chatForm" autocomplete="off">
+            <button type="button" class="btn btn--icon" id="btnVoice" title="Toggle voice input (Web Speech API)">
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                <path d="M12 15a3.5 3.5 0 0 0 3.5-3.5v-5a3.5 3.5 0 0 0-7 0v5A3.5 3.5 0 0 0 12 15Z"
+                      fill="none" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3.5"
+                      fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </button>
+
+            <input class="input" id="chatInput" name="message" type="text"
+                   placeholder="Speak or type a command…" autocomplete="off" />
+
+            <button class="btn btn--send" id="btnSend" type="submit" title="Transmit">
+              <span>TRANSMIT</span>
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                <path d="M3 11.5 21 3l-8.5 18-2-7.5L3 11.5Z" fill="none"
+                      stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- ------------------- RIGHT: terminal ------------------- -->
+      <aside class="panel panel--right glass">
+        <div class="feed-head">
+          <h2 class="block__title"><span class="tick"></span>Execution Trace</h2>
+          <button class="mini-btn" id="btnClearLog" title="Clear trace">CLR</button>
+        </div>
+        <div class="terminal" id="terminal" aria-live="polite"></div>
+        <div class="term-foot mono">
+          <span id="termStatus">idle</span>
+          <span class="term-foot__sep">/</span>
+          <span id="termCount">0 events</span>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script src="/static/script.js" defer></script>
+</body>
+</html>
