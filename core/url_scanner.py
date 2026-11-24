@@ -1,124 +1,136 @@
+import ipaddress
 import math
-import re
-from urllib.parse import urlparse
+import socket
+from urllib.parse import urljoin, urlparse
 import requests
+
+MAX_REDIRECT_HOPS = 5
+REQUEST_TIMEOUT_SEC = 5
+
+def _is_public_ip(ip_str: str) -> bool:
+    try:
+        ip_obj = ipaddress.ip_address(ip_str)
+    except ValueError:
+        return False
+    return not (ip_obj.is_private or ip_obj.is_loopback or ip_obj.is_link_local or ip_obj.is_multicast or ip_obj.is_reserved or ip_obj.is_unspecified)
+
+def validate_public_url(url: str) -> tuple[bool, str | None]:
+    parsed = urlparse(url)
+    if parsed.scheme not in ("http", "https"):
+        return False, "Only http:// and https:// URLs are supported."
+    hostname = (parsed.hostname or "").strip().lower()
+    if not hostname:
+        return False, "URL must include a valid hostname."
+    if hostname in ("localhost", "localhost.localdomain") or hostname.endswith(".local") or hostname.endswith(".internal"):
+        return False, "Blocked internal/local hostname (SSRF protection)."
+    try:
+        ipaddress.ip_address(hostname)
+        if not _is_public_ip(hostname):
+            return False, f"Blocked non-public IP address: {hostname} (SSRF protection)."
+        return True, None
+    except ValueError:
+        pass
+    try:
+        infos = socket.getaddrinfo(hostname, parsed.port or (443 if parsed.scheme == "https" else 80), type=socket.SOCK_STREAM)
+        for info in infos:
+            if not _is_public_ip(info[4][0]):
+                return False, f"Hostname resolves to non-public IP {info[4][0]} (SSRF protection)."
+    except socket.gaierror:
+        return True, "dns_unresolvable"
+    except Exception:
+        return True, "dns_check_skipped"
+    return True, None
 
 class URLScanner:
     def __init__(self):
-        self.high_risk_tlds = ['.top', '.xyz', '.buzz', '.club', '.online', '.apk', '.loan', '.win', '.bid']
-        self.scam_keywords = ['kyc', 'echallan', 'pan-update', 'electricity-cut', 'digital-arrest', 'sbi-update', 'hdfc-kyc', 'free-recharge', 'lottery', 'job-offer']
-        self.legit_brands = {
-            'sbi': ['onlinesbi.sbi', 'sbi.co.in'],
-            'hdfc': ['hdfcbank.com'],
-            'icici': ['icicibank.com'],
-            'parivahan': ['parivahan.gov.in'],
-            'indiapost': ['indiapost.gov.in'],
-            'npci': ['npci.org.in']
-        }
+        self.high_risk_tlds = (".top", ".xyz", ".buzz", ".club", ".online", ".apk", ".loan", ".win", ".bid", ".tk", ".ml", ".ga", ".cf")
+        self.scam_keywords = ["kyc", "echallan", "pan-update", "electricity-cut", "digital-arrest", "sbi-update", "hdfc-kyc", "free-recharge", "lottery", "job-offer", "verify-now", "account-block", "pm-kisan", "rto-challan"]
+        self.legit_brands = {"sbi": ["onlinesbi.sbi", "sbi.co.in", "www.sbi.co.in"], "hdfc": ["hdfcbank.com", "www.hdfcbank.com"], "icici": ["icicibank.com", "www.icicibank.com"], "parivahan": ["parivahan.gov.in", "www.parivahan.gov.in"], "indiapost": ["indiapost.gov.in", "www.indiapost.gov.in"], "npci": ["npci.org.in", "www.npci.org.in"], "cybercrime": ["cybercrime.gov.in", "www.cybercrime.gov.in"]}
 
-    def unshorten_url(self, url: str) -> str:
-        """Resolves short URLs like bit.ly, tinyurl to their final destination."""
-        if not url.startswith(('http://', 'https://')):
-            url = 'https://' + url
-        try:
-            response = requests.head(url, allow_redirects=True, timeout=5)
-            return response.url
-        except Exception:
-            return url
+    def unshorten_url(self, url: str) -> tuple[str, int, str | None]:
+        current = url.strip()
+        if "://" not in current:
+            current = "https://" + current
+        ok, note = validate_public_url(current)
+        if not ok:
+            raise ValueError(note or "Blocked unsafe URL.")
+        if note == "dns_unresolvable":
+            return current, 0, "Domain could not be resolved via DNS; static heuristics applied."
+        hops = 0
+        for _ in range(MAX_REDIRECT_HOPS):
+            try:
+                resp = requests.head(current, allow_redirects=False, timeout=REQUEST_TIMEOUT_SEC, headers={"User-Agent": "RAKSHAK-AI/3.0"})
+            except requests.RequestException:
+                return current, hops, "Live redirect lookup timed out or unavailable; static heuristics applied."
+            if resp.status_code in (301, 302, 303, 307, 308) and resp.headers.get("Location"):
+                next_url = urljoin(current, resp.headers["Location"])
+                ok_n, err_n = validate_public_url(next_url)
+                if not ok_n:
+                    raise ValueError(f"Redirect target blocked: {err_n}")
+                current, hops = next_url, hops + 1
+                if err_n == "dns_unresolvable":
+                    break
+            else:
+                break
+        return current, hops, None
 
     def calculate_entropy(self, text: str) -> float:
-        """Calculates Shannon Entropy to detect DGA or random phishing domains."""
         if not text:
             return 0.0
-        entropy = 0.0
-        length = len(text)
-        # Count character frequencies
-        char_counts = {}
-        for char in text:
-            char_counts[char] = char_counts.get(char, 0) + 1
-        
-        for count in char_counts.values():
-            probability = count / length
-            entropy -= probability * math.log2(probability)
-        return round(entropy, 2)
+        counts = {}
+        for ch in text:
+            counts[ch] = counts.get(ch, 0) + 1
+        return round(-sum((c / len(text)) * math.log2(c / len(text)) for c in counts.values()), 2)
 
     def levenshtein_distance(self, s1: str, s2: str) -> int:
-        """Pure Python Levenshtein distance for homograph/typosquatting detection."""
         if len(s1) < len(s2):
             return self.levenshtein_distance(s2, s1)
-        if len(s2) == 0:
+        if not s2:
             return len(s1)
-        
-        previous_row = range(len(s2) + 1)
+        prev = list(range(len(s2) + 1))
         for i, c1 in enumerate(s1):
-            current_row = [i + 1]
+            curr = [i + 1]
             for j, c2 in enumerate(s2):
-                insertions = previous_row[j + 1] + 1
-                deletions = current_row[j] + 1
-                substitutions = previous_row[j] + (c1 != c2)
-                current_row.append(min(insertions, deletions, substitutions))
-            previous_row = current_row
-        return previous_row[-1]
+                curr.append(min(prev[j + 1] + 1, curr[j] + 1, prev[j] + (c1 != c2)))
+            prev = curr
+        return prev[-1]
 
-    def check_homograph(self, domain: str) -> bool:
-        """Checks if domain is a typosquatting variant of major Indian services."""
-        domain_name = domain.split('.')[0].lower()
-        for brand, official_domains in self.legit_brands.items():
-            if domain in official_domains:
-                return False
-            # If domain is suspiciously close to brand name but not exact
-            dist = self.levenshtein_distance(domain_name, brand)
-            if 0 < dist <= 2:
-                return True
-        return False
+    def check_homograph(self, hostname: str) -> tuple[bool, str | None]:
+        host = hostname.lower().strip(".")
+        if host.startswith("www."):
+            host = host[4:]
+        parts = host.split(".")
+        if len(parts) < 2:
+            return False, None
+        base_label = parts[-3] if (len(parts) >= 3 and parts[-2] in ("co", "gov", "org", "ac", "net") and len(parts[-1]) == 2) else parts[-2]
+        for brand, official in self.legit_brands.items():
+            if any(host == d or host.endswith("." + d) for d in official):
+                return False, None
+            if brand in host and len(brand) >= 3 and (f"{brand}-" in host or f"-{brand}" in host):
+                return True, brand
+            if len(brand) >= 4 and len(base_label) >= 4 and 0 < self.levenshtein_distance(base_label, brand) <= 2:
+                return True, brand
+        return False, None
 
     def scan(self, input_url: str) -> dict:
-        final_url = self.unshorten_url(input_url)
+        cleaned = (input_url or "").strip()
+        if not cleaned:
+            raise ValueError("Please enter a URL to scan.")
+        final_url, hops, note = self.unshorten_url(cleaned)
         parsed = urlparse(final_url)
-        domain = parsed.netloc.lower()
-        path = parsed.path.lower()
-        full_path = domain + path
-
-        # Checks
-        tld_flag = any(domain.endswith(tld) for tld in self.high_risk_tlds)
-        keyword_flag = any(kw in full_path for kw in self.scam_keywords)
-        entropy_val = self.calculate_entropy(domain)
-        high_entropy_flag = entropy_val > 4.0  # Random strings have higher entropy
-        homograph_flag = self.check_homograph(domain)
-
-        # Risk scoring logic for URL
-        score = 0
-        reasons = []
-
-        if tld_flag:
-            score += 35
-            reasons.append("High-risk TLD detected (.top/.xyz/etc.)")
-        if keyword_flag:
-            score += 40
-            reasons.append("Suspicious scam keyword found in URL path")
-        if high_entropy_flag:
-            score += 25
-            reasons.append(f"High domain entropy ({entropy_val}), looks algorithmically generated")
-        if homograph_flag:
-            score += 50
-            reasons.append("Potential Typosquatting / Homograph attack targeting Indian portals")
-
+        hostname = (parsed.hostname or "").lower()
+        full_target = hostname + (parsed.path + ("?" + parsed.query if parsed.query else "")).lower()
+        tld_flag = any(hostname.endswith(t) for t in self.high_risk_tlds)
+        matched_kw = [kw for kw in self.scam_keywords if kw in full_target]
+        entropy = self.calculate_entropy(hostname)
+        homograph, brand = self.check_homograph(hostname)
+        score, flags = 0, []
+        if tld_flag: score += 35; flags.append("High-risk TLD detected (.top/.xyz/.loan/etc.)")
+        if matched_kw: score += 40; flags.append(f"Suspicious scam keywords in URL: {', '.join(matched_kw)}")
+        if entropy > 4.0: score += 20; flags.append(f"High domain entropy ({entropy})")
+        if homograph: score += 45; flags.append(f"Potential impersonation targeting '{brand}'")
+        if parsed.scheme == "http": score += 10; flags.append("Unencrypted HTTP connection")
+        if hostname.count(".") >= 3: score += 10; flags.append("Multiple nested subdomains detected")
+        if hops >= 2: score += 10; flags.append(f"Multiple URL redirects ({hops} hops)")
         score = min(score, 100)
-        risk_level = "SAFE" if score < 30 else ("MEDIUM" if score < 70 else "HIGH")
-
-        return {
-            "original_url": input_url,
-            "final_resolved_url": final_url,
-            "domain": domain,
-            "entropy": entropy_val,
-            "risk_score": score,
-            "risk_level": risk_level,
-            "flags": reasons
-        }
-
-if __name__ == "__main__":
-    scanner = URLScanner()
-    test_url = "sbi-kyc-update.top/login"
-    print(f"Scanning test URL: {test_url}")
-    import json
-    print(json.dumps(scanner.scan(test_url), indent=2))
+        return {"original_url": cleaned, "final_resolved_url": final_url, "domain": hostname, "redirect_hops": hops, "entropy": entropy, "risk_score": score, "risk_level": "SAFE" if score < 30 else ("MEDIUM" if score < 70 else "HIGH"), "flags": flags, "analysis_engine": "heuristic_url_scanner", "confidence": "Medium (Heuristic)" if not note else "Low-Medium (Static Only)", "resolution_note": note, "limitations": "Heuristic URL analysis only; does not execute page JavaScript or guarantee safety."}
