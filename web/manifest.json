@@ -1,13 +1,13 @@
 {
-  "name": "RAKSHAK AI — Cyber Safety Platform",
+  "name": "RAKSHAK AI — BY DIVYESH BAMBHANIYA",
   "short_name": "RAKSHAK AI",
-  "description": "Digital Threat Intelligence & Cyber Safety Platform",
+  "description": "RAKSHAK AI — Created by Divyesh Bambhaniya. Digital Threat Intelligence & Cyber Safety Platform.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#081020",
-  "theme_color": "#081020",
+  "background_color": "#060c18",
+  "theme_color": "#060c18",
   "icons": [
     {"src": "/static/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
     {"src": "/static/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}

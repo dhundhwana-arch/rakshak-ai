@@ -3,29 +3,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#060c1a" />
-  <meta name="description" content="RAKSHAK AI by Divyesh Bambhaniya — Digital Threat Intelligence & Cyber Safety Platform" />
+  <meta name="theme-color" content="#060c18" />
+  <meta name="description" content="RAKSHAK AI — Created by Divyesh Bambhaniya. Digital Threat Intelligence & Cyber Safety Platform." />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="RAKSHAK AI" />
-  <title>RAKSHAK AI • by Divyesh Bambhaniya</title>
+  <title>RAKSHAK AI — BY DIVYESH BAMBHANIYA</title>
   <link rel="manifest" href="/manifest.json" />
   <link rel="icon" type="image/png" sizes="192x192" href="/static/icons/icon-192.png" />
   <link rel="apple-touch-icon" href="/static/icons/icon-192.png" />
   <link rel="stylesheet" href="/static/styles.css" />
 </head>
 <body>
-  <div class="aurora-bg" aria-hidden="true">
+  <div id="splashScreen" class="splash-screen" role="status" aria-label="Loading RAKSHAK AI">
+    <div class="splash-inner">
+      <div class="splash-emblem">
+        <div class="splash-ring"></div>
+        <img src="/static/icons/icon-512.png" alt="RAKSHAK AI Shield D Monogram" class="splash-logo" />
+      </div>
+      <div class="splash-title">RAKSHAK <span>AI</span></div>
+      <div class="splash-creator">CREATED BY DIVYESH BAMBHANIYA</div>
+      <div class="splash-bar"><span></span></div>
+    </div>
+  </div>
+
+  <div class="ambient-bg" aria-hidden="true">
     <span class="orb orb-cyan"></span>
-    <span class="orb orb-violet"></span>
     <span class="orb orb-mint"></span>
+    <span class="orb orb-gold"></span>
   </div>
 
   <div class="app-shell">
     <header class="topbar">
       <div class="brand">
-        <div class="logo-ring">
-          <img src="/static/icons/icon-192.png" alt="RAKSHAK AI by Divyesh" class="brand-icon" />
+        <div class="logo-frame">
+          <img src="/static/icons/icon-192.png" alt="RAKSHAK AI Logo" class="brand-icon" />
         </div>
         <div>
           <div class="brand-title">RAKSHAK <span>AI</span></div>
@@ -34,86 +46,82 @@
       </div>
       <div class="topbar-actions">
         <span id="healthBadge" class="status-pill">● Checking</span>
-        <button id="langToggle" class="btn-3d btn-glass" type="button">ગુજરાતી</button>
+        <button id="langToggle" class="btn-3d btn-metal" type="button">ગુજરાતી</button>
         <button id="installBtn" class="btn-3d btn-cyan hidden" type="button" data-i18n="installApp">Install App</button>
       </div>
     </header>
 
     <div id="view-home" class="view active">
-      <section class="hero-radar-card">
-        <div class="radar-visual" aria-hidden="true">
+      <section class="hero-shield-card">
+        <div class="radar-stage" aria-hidden="true">
           <div class="radar-ring r1"></div>
           <div class="radar-ring r2"></div>
           <div class="radar-sweep"></div>
           <div class="radar-core">
-            <svg viewBox="0 0 64 64" width="40" height="40" fill="none">
-              <path d="M32 6L52 14V31C52 44.5 43.2 54.4 32 58C20.8 54.4 12 44.5 12 31V14L32 6Z" fill="url(#sg)" stroke="#00f5c4" stroke-width="2.5"/>
-              <path d="M23 32L29.5 38.5L42 25" stroke="#061422" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-              <defs><linearGradient id="sg" x1="12" y1="6" x2="52" y2="58" gradientUnits="userSpaceOnUse"><stop stop-color="#00f5c4"/><stop offset="1" stop-color="#00d9ff"/></linearGradient></defs>
-            </svg>
+            <img src="/static/icons/icon-192.png" alt="RAKSHAK AI Shield" class="hero-shield-img" />
           </div>
         </div>
-        <div class="hero-info">
-          <span class="creator-pill">🛡️ DIVYESH BAMBHANIYA • AI CYBER SHIELD</span>
+        <div class="hero-copy">
+          <span class="brand-kicker">BY DIVYESH BAMBHANIYA</span>
           <h1 data-i18n="heroState">SYSTEM PROTECTED</h1>
-          <p class="hero-sub" data-i18n="heroSub">AI Real-Time Threat Intelligence Active</p>
+          <p class="hero-sub" data-i18n="heroSub">AI Threat Intelligence &amp; Heuristic Cyber Safety</p>
           <div class="ecg-row">
-            <svg class="ecg-svg" viewBox="0 0 120 24" fill="none"><path class="ecg-line" d="M0 12 H30 L38 4 L46 21 L54 8 L60 12 H120" stroke="#00f5c4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg class="ecg-svg" viewBox="0 0 120 24" fill="none"><path class="ecg-line" d="M0 12 H28 L36 4 L44 21 L52 8 L58 12 H120" stroke="#00f5c4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             <span id="lastScanText" class="muted">Ready to scan</span>
           </div>
         </div>
       </section>
 
       <section class="bento-grid">
-        <article class="bento-card card-cyan">
+        <article class="surface-card accent-cyan">
           <div class="card-head">
-            <div class="icon-badge badge-cyan">🔗</div>
-            <div><h2 data-i18n="urlTitle">URL SCANNER</h2><p class="card-sub" data-i18n="urlSub">Phishing &amp; link check</p></div>
+            <div class="icon-chip chip-c">🔗</div>
+            <div><h2 data-i18n="urlTitle">URL SCANNER</h2><p class="card-sub" data-i18n="urlSub">Redirect, TLD &amp; phishing heuristics</p></div>
           </div>
-          <form id="urlForm" class="mini-form">
+          <form id="urlForm" class="scan-form">
             <input id="urlInput" name="url" type="text" placeholder="Enter URL to scan..." autocomplete="off" required />
-            <div class="chip-row">
-              <button type="button" class="chip chip-cyan" data-fill-url="http://sbi-kyc-verify-now.xyz/login">Phishing Test</button>
-              <button type="button" class="chip chip-cyan" data-fill-url="https://www.wikipedia.org">Safe Test</button>
+            <div class="sample-row">
+              <button type="button" class="sample-pill pill-cyan" data-fill-url="http://sbi-kyc-verify-now.xyz/login">Phishing Test</button>
+              <button type="button" class="sample-pill pill-cyan" data-fill-url="https://www.wikipedia.org">Safe Test</button>
             </div>
-            <button type="submit" class="btn-3d btn-cyan btn-full" data-i18n="scanUrlBtn">⚡ Scan Link</button>
+            <button type="submit" class="btn-3d btn-cyan btn-full" data-i18n="scanUrlBtn">⚡ Scan URL</button>
           </form>
         </article>
 
-        <article class="bento-card card-violet">
+        <article class="surface-card accent-mint">
           <div class="card-head">
-            <div class="icon-badge badge-violet">🧠</div>
-            <div><h2 data-i18n="textTitle">SCAM MSG ANALYZER</h2><p class="card-sub" data-i18n="textSub">SMS &amp; WhatsApp AI</p></div>
+            <div class="icon-chip chip-m">🧠</div>
+            <div><h2 data-i18n="textTitle">SCAM MSG ANALYZER</h2><p class="card-sub" data-i18n="textSub">SMS / WhatsApp + Gujarati safety notes</p></div>
           </div>
-          <form id="textForm" class="mini-form">
+          <form id="textForm" class="scan-form">
             <textarea id="textInput" name="message" rows="2" placeholder="Paste suspicious SMS or message..." required></textarea>
-            <div class="chip-row">
-              <button type="button" class="chip chip-violet" data-fill-text="URGENT: Your bank KYC is blocked! Click http://bit.ly/kyc-now and share OTP within 10 mins.">KYC Scam Test</button>
+            <div class="sample-row">
+              <button type="button" class="sample-pill pill-mint" data-fill-text="URGENT: Your bank KYC is blocked! Click http://bit.ly/kyc-now and share OTP within 10 mins.">KYC Scam Test</button>
             </div>
-            <button type="submit" class="btn-3d btn-violet btn-full" data-i18n="scanTextBtn">✨ Analyze SMS</button>
+            <button type="submit" class="btn-3d btn-mint btn-full" data-i18n="scanTextBtn">✨ Analyze Message</button>
           </form>
         </article>
 
-        <article class="bento-card card-amber">
+        <article class="surface-card accent-gold">
           <div class="card-head">
-            <div class="icon-badge badge-amber">📦</div>
-            <div><h2 data-i18n="apkTitle">APK INSPECTOR</h2><p class="card-sub" data-i18n="apkSub">Static malware check</p></div>
+            <div class="icon-chip chip-g">📦</div>
+            <div><h2 data-i18n="apkTitle">APK STATIC INSPECTOR</h2><p class="card-sub" data-i18n="apkSub">SHA-256, ZIP &amp; permission indicators</p></div>
           </div>
-          <form id="apkForm" class="mini-form">
-            <label class="upload-pill">
+          <form id="apkForm" class="scan-form">
+            <label class="upload-zone">
               <input id="apkInput" name="file" type="file" accept=".apk,application/vnd.android.package-archive" required />
               <span id="apkFileLabel" data-i18n="apkPick">Choose .apk file (Max 25 MB)</span>
             </label>
             <div class="scan-bars" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
-            <button type="submit" class="btn-3d btn-amber btn-full" data-i18n="scanApkBtn">🛡️ Inspect APK</button>
+            <button type="submit" class="btn-3d btn-gold btn-full" data-i18n="scanApkBtn">🛡️ Inspect APK</button>
           </form>
         </article>
 
-        <article class="bento-card card-mint">
+        <article class="surface-card accent-steel">
           <div class="card-head space-between">
             <div class="flex-row">
-              <div class="icon-badge badge-mint">🕒</div>
-              <div><h2 data-i18n="recentTitle">RECENT SCANS</h2><p class="card-sub" data-i18n="recentSub">Live device log</p></div>
+              <div class="icon-chip chip-s">🕒</div>
+              <div><h2 data-i18n="recentTitle">RECENT SCANS</h2><p class="card-sub" data-i18n="recentSub">Saved on this device</p></div>
             </div>
             <button id="clearHistoryBtn" class="btn-tiny" type="button" data-i18n="clear">Clear</button>
           </div>
@@ -128,38 +136,44 @@
     </div>
 
     <div id="view-scanners" class="view">
-      <article class="bento-card card-violet">
+      <article class="surface-card accent-cyan">
         <div class="card-head">
-          <div class="icon-badge badge-violet">🖼️</div>
-          <div><h2>IMAGE SCAM SCANNER (DEMO)</h2><p class="card-sub">Screenshot &amp; Digital Arrest Demo Endpoint</p></div>
+          <div class="icon-chip chip-c">🖼️</div>
+          <div><h2>IMAGE SCANNER (DEMO)</h2><p class="card-sub">Predefined demo endpoint for screenshot alerts</p></div>
         </div>
-        <form id="imageForm" class="mini-form">
-          <p class="demo-note">Demo endpoint: returns a sample Digital Arrest scam warning (full vision AI is on the roadmap).</p>
-          <label class="upload-pill">
+        <form id="imageForm" class="scan-form">
+          <p class="demo-note">Research Note: This endpoint currently returns a predefined demo response (real image recognition is on the roadmap).</p>
+          <label class="upload-zone">
             <input id="imageInput" name="file" type="file" accept="image/*" required />
             <span id="imgFileLabel">Choose Screenshot / Image (PNG, JPG)</span>
           </label>
-          <button type="submit" class="btn-3d btn-violet btn-full">🔍 Run Demo Image Scan</button>
+          <button type="submit" class="btn-3d btn-cyan btn-full">🔍 Run Demo Image Scan</button>
         </form>
       </article>
       <section id="scannerResultMirror" class="result-card hidden"></section>
     </div>
 
     <div id="view-threats" class="view">
-      <article class="bento-card card-cyan">
-        <h2 style="margin-bottom:10px;">⚠️ Common Cyber Scams in India</h2>
+      <article class="surface-card accent-mint">
+        <div class="card-head">
+          <div class="icon-chip chip-m">⚠️</div>
+          <div><h2>CYBER SCAM AWARENESS</h2><p class="card-sub">Common digital threats in India</p></div>
+        </div>
         <div class="threat-list">
-          <div class="threat-item"><span class="dot red"></span><div><strong>Digital Arrest Scam:</strong> Fake police/CBI video calls demanding instant transfer. Never pay — cut the call and dial 1930.</div></div>
-          <div class="threat-item"><span class="dot amber"></span><div><strong>Fake Bank KYC / Electricity SMS:</strong> Urgent links on .xyz or shortened URLs asking for OTP or Rs 10 fee.</div></div>
-          <div class="threat-item"><span class="dot violet"></span><div><strong>Malicious .apk Files:</strong> Wedding card, RTO challan, or PM scheme .apk files on WhatsApp that steal SMS/OTP.</div></div>
+          <div class="threat-item"><span class="dot red"></span><div><strong>Digital Arrest Scam:</strong> Fake police/CBI video calls demanding instant payment. Cut the call and dial 1930.</div></div>
+          <div class="threat-item"><span class="dot gold"></span><div><strong>Fake Bank KYC / Bill SMS:</strong> Urgent links on suspicious domains asking for OTP or verification fees.</div></div>
+          <div class="threat-item"><span class="dot cyan"></span><div><strong>Malicious .apk Files:</strong> Unknown wedding card, RTO challan, or scheme .apk files shared on messaging apps.</div></div>
         </div>
       </article>
     </div>
 
     <div id="view-helpline" class="view">
-      <article class="bento-card card-amber">
-        <h2 style="margin-bottom:8px;">🚨 National Cyber Crime Helpline</h2>
-        <p class="muted" style="margin-bottom:14px;">Report online financial fraud within the golden hour to freeze fraudulent transactions.</p>
+      <article class="surface-card accent-gold">
+        <div class="card-head">
+          <div class="icon-chip chip-g">🚨</div>
+          <div><h2>CYBER CRIME HELPLINE</h2><p class="card-sub">Immediate emergency reporting</p></div>
+        </div>
+        <p class="muted" style="margin-bottom:14px;">Report online financial fraud immediately to help freeze fraudulent transfers.</p>
         <div class="helpline-actions">
           <a href="tel:1930" class="btn-3d btn-danger btn-full" style="text-align:center;text-decoration:none;">📞 Call 1930 Immediately</a>
           <a href="https://cybercrime.gov.in" target="_blank" rel="noopener" class="btn-3d btn-cyan btn-full" style="text-align:center;text-decoration:none;">🌐 Open cybercrime.gov.in</a>
@@ -168,25 +182,30 @@
     </div>
 
     <div id="view-about" class="view">
-      <article class="bento-card card-mint">
-        <div class="dev-hero">
-          <img src="/static/icons/icon-192.png" alt="RAKSHAK AI" class="dev-logo" />
+      <article class="surface-card accent-gold dev-profile-card">
+        <div class="dev-banner">
+          <div class="dev-emblem-wrap">
+            <img src="/static/icons/icon-512.png" alt="RAKSHAK AI Shield D Monogram" class="dev-logo" />
+          </div>
           <div>
-            <span class="creator-pill">CREATOR &amp; DEVELOPER</span>
-            <h2>Divyesh Bambhaniya</h2>
+            <span class="brand-kicker">CREATOR &amp; LEAD DEVELOPER</span>
+            <h2 class="dev-name">DIVYESH BAMBHANIYA</h2>
             <p class="card-sub">Independent Project Builder • AI &amp; Cybersecurity Research</p>
           </div>
         </div>
-        <p class="muted" style="margin:12px 0;">
-          RAKSHAK AI is an independent cybersecurity research platform created by <strong>Divyesh Bambhaniya</strong> to make digital threat intelligence accessible, understandable, and useful in English and Gujarati.
+        <p class="dev-bio">
+          <strong>RAKSHAK AI</strong> is created by <strong>DIVYESH BAMBHANIYA</strong> to make digital safety intelligence accessible, understandable, and useful — combining heuristic URL analysis, static APK inspection, and Gujarati-language scam awareness in one unified platform.
         </p>
-        <div class="kv-row"><div class="kv-key">Platform</div><div>RAKSHAK AI v2.0 • FastAPI + Mobile PWA</div></div>
-        <div class="kv-row" style="margin-top:8px;"><div class="kv-key">Disclaimer</div><div>Heuristic scores are research estimates, not proof of safety or malicious intent.</div></div>
+        <div class="kv-grid">
+          <div class="kv-row"><div class="kv-key">Product Identity</div><div>RAKSHAK AI • BY DIVYESH BAMBHANIYA</div></div>
+          <div class="kv-row"><div class="kv-key">Active Modules</div><div>URL Scanner • Text/SMS Analyzer • APK Static Inspector • Image Demo Endpoint</div></div>
+          <div class="kv-row"><div class="kv-key">Responsible Use</div><div>Experimental research prototype. Heuristic scores are estimates, not proof of malicious activity or guaranteed safety.</div></div>
+        </div>
       </article>
     </div>
 
     <footer class="footer">
-      <div class="dev-signature">🛡️ RAKSHAK AI • Created by <strong>Divyesh Bambhaniya</strong></div>
+      <div class="footer-brand">RAKSHAK AI • <strong>BY DIVYESH BAMBHANIYA</strong></div>
     </footer>
   </div>
 
@@ -195,7 +214,7 @@
     <button class="nav-item" data-view="scanners" type="button"><span>🖼️</span><small>Image</small></button>
     <button class="nav-item" data-view="threats" type="button"><span>🛡️</span><small>Threats</small></button>
     <button class="nav-item" data-view="helpline" type="button"><span>📞</span><small>1930</small></button>
-    <button class="nav-item" data-view="about" type="button"><span>👨‍💻</span><small>Divyesh</small></button>
+    <button class="nav-item" data-view="about" type="button"><span>👨‍💻</span><small>Developer</small></button>
   </nav>
 
   <script src="/static/app.js"></script>

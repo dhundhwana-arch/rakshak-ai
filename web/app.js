@@ -1,11 +1,11 @@
-const I18N={en:{installApp:"Install App",heroState:"SYSTEM PROTECTED",heroSub:"AI Real-Time Threat Intelligence Active",urlTitle:"URL SCANNER",urlSub:"Phishing & link check",scanUrlBtn:"⚡ Scan Link",textTitle:"SCAM MSG ANALYZER",textSub:"SMS & WhatsApp AI",scanTextBtn:"✨ Analyze SMS",apkTitle:"APK INSPECTOR",apkSub:"Static malware check",apkPick:"Choose .apk file (Max 25 MB)",scanApkBtn:"🛡️ Inspect APK",recentTitle:"RECENT SCANS",recentSub:"Live device log",clear:"Clear",noHistory:"No scans yet. Run a scan to see results here.",scanning:"Analyzing threat signals..."},gu:{installApp:"એપ ઇન્સ્ટોલ કરો",heroState:"સિસ્ટમ સુરક્ષિત છે",heroSub:"AI રિયલ-ટાઇમ સાયબર શીલ્ડ સક્રિય",urlTitle:"લિંક સ્કેનર (URL)",urlSub:"ફિશિંગ લિંક તપાસ",scanUrlBtn:"⚡ લિંક સ્કેન કરો",textTitle:"સ્કેમ મેસેજ તપાસ",textSub:"SMS અને WhatsApp AI",scanTextBtn:"✨ મેસેજ તપાસો",apkTitle:"APK સ્ટેટિક તપાસ",apkSub:"માલવેર સુરક્ષા તપાસ",apkPick:".apk ફાઇલ પસંદ કરો (25 MB)",scanApkBtn:"🛡️ APK તપાસો",recentTitle:"તાજેતરના સ્કેન",recentSub:"આ ફોનનો લોગ",clear:"સાફ કરો",noHistory:"હજુ સુધી કોઈ સ્કેન નથી.",scanning:"સુરક્ષા તપાસ ચાલી રહી છે..."}};
-let lang="en",deferredPrompt=null;const HKEY="rakshak_scan_history_v2";
+const I18N={en:{installApp:"Install App",heroState:"SYSTEM PROTECTED",heroSub:"AI Threat Intelligence & Heuristic Cyber Safety",urlTitle:"URL SCANNER",urlSub:"Redirect, TLD & phishing heuristics",scanUrlBtn:"⚡ Scan URL",textTitle:"SCAM MSG ANALYZER",textSub:"SMS / WhatsApp + Gujarati safety notes",scanTextBtn:"✨ Analyze Message",apkTitle:"APK STATIC INSPECTOR",apkSub:"SHA-256, ZIP & permission indicators",apkPick:"Choose .apk file (Max 25 MB)",scanApkBtn:"🛡️ Inspect APK",recentTitle:"RECENT SCANS",recentSub:"Saved on this device",clear:"Clear",noHistory:"No scans yet. Run a scan to see results here.",scanning:"Analyzing threat signals..."},gu:{installApp:"એપ ઇન્સ્ટોલ કરો",heroState:"સિસ્ટમ સુરક્ષિત છે",heroSub:"AI સાયબર સુરક્ષા અને હ્યુરિસ્ટિક તપાસ સક્રિય",urlTitle:"લિંક સ્કેનર (URL)",urlSub:"ફિશિંગ અને રિડાયરેક્ટ તપાસ",scanUrlBtn:"⚡ લિંક સ્કેન કરો",textTitle:"સ્કેમ મેસેજ તપાસ",textSub:"SMS / WhatsApp + ગુજરાતી સમજૂતી",scanTextBtn:"✨ મેસેજ તપાસો",apkTitle:"APK સ્ટેટિક તપાસ",apkSub:"SHA-256 અને પરમિશન તપાસ",apkPick:".apk ફાઇલ પસંદ કરો (25 MB)",scanApkBtn:"🛡️ APK તપાસો",recentTitle:"તાજેતરના સ્કેન",recentSub:"આ ફોનમાં સેવ થયેલ",clear:"સાફ કરો",noHistory:"હજુ સુધી કોઈ સ્કેન નથી.",scanning:"સુરક્ષા તપાસ ચાલી રહી છે..."}};
+let lang="en",deferredPrompt=null;const HKEY="rakshak_scan_history_v3";
 const esc=v=>String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 function setLang(l){lang=l;const d=I18N[l]||I18N.en;document.querySelectorAll("[data-i18n]").forEach(e=>{const k=e.getAttribute("data-i18n");if(d[k])e.textContent=d[k];});document.getElementById("langToggle").textContent=l==="en"?"ગુજરાતી":"English";}
 function getScore(d){for(const k of["risk_score","ai_risk_score","score","final_score","threat_score"]){if(typeof d[k]==="number")return d[k];if(typeof d[k]==="string"&&!Number.isNaN(Number(d[k])))return Number(d[k]);}return null;}
 function showResult(type,target,data,mirrorId="resultCard"){
   const card=document.getElementById(mirrorId),sc=getScore(data);
-  let bc="risk-low",bt="SAFE / ANALYZED";
+  let bc="risk-low",bt="ANALYZED";
   if(sc!==null){if(sc>=70){bc="risk-high";bt=`HIGH RISK • ${sc}/100`;}else if(sc>=35){bc="risk-med";bt=`MEDIUM • ${sc}/100`;}else{bc="risk-low";bt=`LOW RISK • ${sc}/100`;}}
   else if(data.risk_level||data.verdict||data.status){const lb=String(data.risk_level||data.verdict||data.status);bt=lb.toUpperCase();if(/high|scam|danger|malicious|phish/i.test(lb))bc="risk-high";else if(/med|suspicious|warn/i.test(lb))bc="risk-med";}
   const guj=data.explanation_gujarati||data.gujarati_explanation||data.explanation||data.summary||"";
@@ -35,6 +35,9 @@ async function runScan(ep,fd,type,label,targetCard="resultCard"){
   }finally{ld.classList.add("hidden");}
 }
 document.addEventListener("DOMContentLoaded",()=>{
+  const splash=document.getElementById("splashScreen");
+  const hideSplash=()=>splash.classList.add("hide");
+  setTimeout(hideSplash,1450);splash.addEventListener("click",hideSplash);
   fetch("/api/health").then(r=>{const b=document.getElementById("healthBadge");if(!r.ok)throw 0;b.textContent="● Live";b.className="status-pill online";}).catch(()=>{const b=document.getElementById("healthBadge");b.textContent="● Offline";b.className="status-pill offline";});
   renderHistory();
   document.querySelectorAll(".nav-item").forEach(btn=>btn.addEventListener("click",()=>{
