@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#081020" />
+  <meta name="description" content="RAKSHAK AI — Digital Threat Intelligence & Cyber Safety Platform" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="RAKSHAK AI" />
+  <title>RAKSHAK AI — Cyber Safety Platform</title>
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/static/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/static/icons/icon-192.png" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <img src="/static/icons/icon-192.png" alt="RAKSHAK AI" class="brand-icon" />
+        <div><h1>RAKSHAK AI</h1><p class="subtitle" data-i18n="tagline">DETECT • ANALYZE • PROTECT</p></div>
+      </div>
+      <div class="topbar-actions">
+        <span id="healthBadge" class="status-pill">Checking...</span>
+        <button id="langToggle" class="btn-ghost" type="button">ગુજરાતી</button>
+        <button id="installBtn" class="btn-install hidden" type="button" data-i18n="installApp">Install App</button>
+      </div>
+    </header>
+    <section class="hero-card">
+      <div>
+        <span class="badge-proto" data-i18n="protoBadge">RESEARCH PROTOTYPE</span>
+        <h2 data-i18n="heroTitle">Check Suspicious Links, Scam Messages &amp; APKs Instantly</h2>
+        <p data-i18n="heroDesc">Heuristic cyber-safety analysis with Gujarati explanations.</p>
+      </div>
+      <div class="quick-helpline">
+        <span data-i18n="helplineLabel">Cyber Fraud Emergency?</span>
+        <a href="tel:1930" class="helpline-btn">📞 Call 1930</a>
+      </div>
+    </section>
+    <nav class="tab-bar" role="tablist">
+      <button class="tab-btn active" data-tab="url" role="tab"><span>🔗</span><span data-i18n="tabUrl">URL</span></button>
+      <button class="tab-btn" data-tab="text" role="tab"><span>🧠</span><span data-i18n="tabText">Text / SMS</span></button>
+      <button class="tab-btn" data-tab="apk" role="tab"><span>📦</span><span data-i18n="tabApk">APK</span></button>
+      <button class="tab-btn" data-tab="image" role="tab"><span>🖼️</span><span data-i18n="tabImage">Image</span></button>
+    </nav>
+    <main>
+      <section id="panel-url" class="panel active">
+        <form id="urlForm" class="scan-form">
+          <label for="urlInput" data-i18n="urlLabel">Suspicious URL or Link</label>
+          <input id="urlInput" name="url" type="text" placeholder="https://example-kyc-update.xyz/login" autocomplete="off" required />
+          <div class="sample-row">
+            <span class="sample-label" data-i18n="trySample">Try sample:</span>
+            <button type="button" class="chip" data-fill-url="http://sbi-kyc-verify-now.xyz/login">Phishing Sample</button>
+            <button type="button" class="chip" data-fill-url="https://www.wikipedia.org">Safe Sample</button>
+          </div>
+          <button type="submit" class="btn-primary" data-i18n="scanUrlBtn">Scan URL</button>
+        </form>
+      </section>
+      <section id="panel-text" class="panel">
+        <form id="textForm" class="scan-form">
+          <label for="textInput" data-i18n="textLabel">Paste Suspicious SMS, WhatsApp, or Email Text</label>
+          <textarea id="textInput" name="message" rows="4" placeholder="Paste suspicious message here..." required></textarea>
+          <div class="sample-row">
+            <span class="sample-label" data-i18n="trySample">Try sample:</span>
+            <button type="button" class="chip" data-fill-text="URGENT: Your bank account KYC is blocked! Click http://bit.ly/kyc-verify and share OTP within 10 minutes.">KYC Scam Sample</button>
+          </div>
+          <button type="submit" class="btn-primary" data-i18n="scanTextBtn">Analyze Message</button>
+        </form>
+      </section>
+      <section id="panel-apk" class="panel">
+        <form id="apkForm" class="scan-form">
+          <label for="apkInput" data-i18n="apkLabel">Upload Android APK File (Max 25 MB)</label>
+          <div class="file-drop">
+            <input id="apkInput" name="file" type="file" accept=".apk,application/vnd.android.package-archive" required />
+            <p class="file-hint" data-i18n="apkHint">Static inspection: SHA-256 hash, permissions &amp; embedded strings.</p>
+          </div>
+          <button type="submit" class="btn-primary" data-i18n="scanApkBtn">Inspect APK</button>
+        </form>
+      </section>
+      <section id="panel-image" class="panel">
+        <form id="imageForm" class="scan-form">
+          <div class="demo-note" data-i18n="imageDemoNote">Demo endpoint: returns a predefined sample scam response.</div>
+          <label for="imageInput" data-i18n="imageLabel">Upload Screenshot / Image</label>
+          <div class="file-drop"><input id="imageInput" name="file" type="file" accept="image/*" required /><p class="file-hint">PNG, JPG, WEBP</p></div>
+          <button type="submit" class="btn-primary" data-i18n="scanImageBtn">Run Demo Image Scan</button>
+        </form>
+      </section>
+      <div id="loadingBox" class="loading-box hidden"><div class="spinner"></div><span data-i18n="scanning">Analyzing threat signals...</span></div>
+      <section id="resultCard" class="result-card hidden" aria-live="polite"></section>
+      <section class="history-card">
+        <div class="history-header"><h3 data-i18n="recentScans">Recent Scans (This Device)</h3><button id="clearHistoryBtn" class="btn-link" type="button" data-i18n="clear">Clear</button></div>
+        <div id="historyList" class="history-list"><p class="muted" data-i18n="noHistory">No scans yet.</p></div>
+      </section>
+    </main>
+    <footer class="footer">
+      <p data-i18n="disclaimer">Experimental research prototype — heuristic scores are estimates, not proof of safety or malicious intent.</p>
+      <p class="dev-credit">🛡️ RAKSHAK AI • Developer: Divyesh Bambhaniya</p>
+    </footer>
+  </div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
